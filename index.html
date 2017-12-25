@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Plunder</title>
+  <title>Blunder</title>
   <script src="https://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
@@ -21,12 +21,35 @@
           return state + 1;
         case 'DECREMENT':
           return state - 1;
-        default:
+        default: 
           return state;
       }
-    } 
+    }
     
-    const { createStore } = Redux;
+    const createStore = (reducer) => {
+      let state;
+      let listeners = [];
+      
+      const getState = () => state;
+      
+      const dispatch = (action) => {
+        state = reducer(state, action);
+        listeners.forEach(listener => listener());
+      };
+      
+      const subscribe = (listener) => {
+        listeners.push(listener);
+        return () => {
+          listeners = listeners.filter(l => l !== listener);
+        };
+      };
+      
+      // get the reducer return an initial value
+      dispatch({});
+      
+      return { getState, dispatch, subscribe };
+    };
+    
     const store = createStore(counter);
     
     const render = () => {
@@ -36,7 +59,7 @@
     store.subscribe(render);
     render();
     
-    root.addEventListener('click', () => {
+    document.addEventListener('click', () => {
       store.dispatch({ type: 'INCREMENT' });
     });
   </script>
