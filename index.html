@@ -198,11 +198,18 @@ const TodoList = ({
 let AddTodo = ({ dispatch }) => {
   let input;
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && input.value != '') {
+      dispatch(addTodo(input.value));
+      input.value = '';
+    }
+  }
+
   return (
     <div>
       <input ref={node => {
         input = node;
-      }} />
+      }} onKeyPress={handleKeyPress} />
       <button onClick={() => {
         if (input.value != '') {
           dispatch(addTodo(input.value));
